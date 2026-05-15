@@ -1,0 +1,1295 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="PSP Examen">
+<title>PSP Examen 2026</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
+
+  :root {
+    --bg: #0d0f14;
+    --surface: #161921;
+    --surface2: #1e2230;
+    --border: #2a2f3f;
+    --accent: #6c8aff;
+    --accent2: #a78bfa;
+    --green: #34d399;
+    --red: #f87171;
+    --amber: #fbbf24;
+    --text: #e8eaf2;
+    --muted: #7b82a0;
+    --radius: 14px;
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bot: env(safe-area-inset-bottom, 0px);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    font-family: 'Space Grotesk', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+    overflow-x: hidden;
+  }
+
+  /* ── SCREENS ── */
+  .screen { display: none; min-height: 100vh; min-height: -webkit-fill-available; flex-direction: column; }
+  .screen.active { display: flex; }
+
+  /* ── HOME ── */
+  #home {
+    padding: calc(var(--safe-top) + 40px) 20px 40px;
+    align-items: center;
+    background: radial-gradient(ellipse at 50% 0%, #1a1f35 0%, var(--bg) 70%);
+  }
+
+  .home-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--accent);
+    background: rgba(108,138,255,0.1);
+    border: 1px solid rgba(108,138,255,0.2);
+    padding: 5px 14px;
+    border-radius: 20px;
+    margin-bottom: 24px;
+  }
+
+  .home-title {
+    font-size: clamp(26px, 7vw, 34px);
+    font-weight: 700;
+    text-align: center;
+    line-height: 1.2;
+    margin-bottom: 8px;
+    background: linear-gradient(135deg, #e8eaf2 30%, var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .home-sub {
+    color: var(--muted);
+    font-size: 14px;
+    text-align: center;
+    margin-bottom: 36px;
+  }
+
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    width: 100%;
+    max-width: 400px;
+    margin-bottom: 36px;
+  }
+
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 10px;
+    text-align: center;
+  }
+
+  .stat-card .num {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--accent);
+    display: block;
+  }
+
+  .stat-card .lbl {
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.5px;
+    margin-top: 2px;
+  }
+
+  .blocks-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    max-width: 400px;
+    margin-bottom: 16px;
+  }
+
+  .block-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    text-align: left;
+    cursor: pointer;
+    color: var(--text);
+    font-family: inherit;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    transition: all 0.18s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .block-btn:active { transform: scale(0.98); }
+
+  .block-btn::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    border-radius: 0 2px 2px 0;
+  }
+
+  .block-btn.b1::before { background: #6c8aff; }
+  .block-btn.b2::before { background: #a78bfa; }
+  .block-btn.b3::before { background: #f59e0b; }
+  .block-btn.b4::before { background: #34d399; }
+  .block-btn.b5::before { background: #f87171; }
+  .block-btn.b6::before { background: #fb923c; }
+
+  .block-icon { font-size: 22px; flex-shrink: 0; }
+
+  .block-info { flex: 1; }
+  .block-name { font-size: 14px; font-weight: 600; }
+  .block-meta { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  .block-count {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--muted);
+    background: var(--surface2);
+    padding: 4px 8px;
+    border-radius: 8px;
+  }
+
+  .block-btn.has-progress .block-count { color: var(--accent); }
+
+  .progress-mini {
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    margin-top: 8px;
+    overflow: hidden;
+  }
+
+  .progress-mini-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.4s;
+  }
+
+  /* ── QUIZ SCREEN ── */
+  #quiz {
+    padding-top: var(--safe-top);
+    padding-bottom: calc(var(--safe-bot) + 20px);
+  }
+
+  .quiz-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 18px 12px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .back-btn {
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 7px 10px;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 15px;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+
+  .quiz-title { font-size: 13px; font-weight: 600; flex: 1; }
+  .quiz-sub { font-size: 11px; color: var(--muted); }
+
+  .score-chips { display: flex; gap: 8px; flex-shrink: 0; }
+
+  .chip {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    padding: 4px 9px;
+    border-radius: 8px;
+    font-weight: 600;
+  }
+
+  .chip-green { background: rgba(52,211,153,0.15); color: var(--green); }
+  .chip-red { background: rgba(248,113,113,0.15); color: var(--red); }
+
+  .progress-bar-wrap {
+    height: 3px;
+    background: var(--border);
+    position: sticky;
+    top: 61px;
+    z-index: 9;
+  }
+
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    transition: width 0.4s ease;
+  }
+
+  .quiz-body {
+    flex: 1;
+    padding: 24px 18px 16px;
+    overflow-y: auto;
+  }
+
+  .q-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+  }
+
+  .q-text {
+    font-size: clamp(15px, 4vw, 18px);
+    font-weight: 600;
+    line-height: 1.5;
+    margin-bottom: 24px;
+    color: var(--text);
+  }
+
+  .options-list { display: flex; flex-direction: column; gap: 10px; }
+
+  .opt-btn {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    cursor: pointer;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 14px;
+    text-align: left;
+    line-height: 1.4;
+    transition: all 0.15s;
+    width: 100%;
+  }
+
+  .opt-btn:active:not(:disabled) { transform: scale(0.98); }
+  .opt-btn:disabled { cursor: default; }
+
+  .opt-letter {
+    flex-shrink: 0;
+    width: 26px;
+    height: 26px;
+    border-radius: 8px;
+    background: var(--surface2);
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    transition: all 0.15s;
+  }
+
+  .opt-btn.correct {
+    border-color: var(--green);
+    background: rgba(52,211,153,0.08);
+  }
+
+  .opt-btn.correct .opt-letter {
+    background: var(--green);
+    color: #0d0f14;
+  }
+
+  .opt-btn.wrong {
+    border-color: var(--red);
+    background: rgba(248,113,113,0.08);
+  }
+
+  .opt-btn.wrong .opt-letter {
+    background: var(--red);
+    color: #0d0f14;
+  }
+
+  .opt-btn.dimmed { opacity: 0.4; }
+
+  /* ── FEEDBACK ── */
+  .feedback-box {
+    margin-top: 20px;
+    border-radius: var(--radius);
+    padding: 16px;
+    font-size: 14px;
+    line-height: 1.6;
+    display: none;
+  }
+
+  .feedback-box.show { display: block; }
+  .feedback-box.correct-fb { background: rgba(52,211,153,0.08); border: 1px solid rgba(52,211,153,0.25); }
+  .feedback-box.wrong-fb { background: rgba(248,113,113,0.08); border: 1px solid rgba(248,113,113,0.25); }
+
+  .fb-header {
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .fb-header.correct-fb { color: var(--green); }
+  .fb-header.wrong-fb { color: var(--red); }
+
+  .fb-text { color: var(--muted); font-size: 13px; }
+
+  /* ── AI BUTTON ── */
+  .ai-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 14px;
+  }
+
+  .ai-btn {
+    flex: 1;
+    background: rgba(108,138,255,0.08);
+    border: 1px solid rgba(108,138,255,0.2);
+    border-radius: 10px;
+    padding: 10px 12px;
+    color: var(--accent);
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.15s;
+  }
+
+  .ai-btn:active { transform: scale(0.97); background: rgba(108,138,255,0.15); }
+
+  .ai-loading {
+    display: none;
+    margin-top: 14px;
+    background: var(--surface2);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    font-size: 13px;
+    color: var(--muted);
+    border: 1px solid var(--border);
+  }
+
+  .ai-loading.show { display: block; }
+
+  .ai-result {
+    display: none;
+    margin-top: 10px;
+    background: rgba(167,139,250,0.06);
+    border: 1px solid rgba(167,139,250,0.2);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--text);
+  }
+
+  .ai-result.show { display: block; }
+  .ai-result-title { font-size: 11px; font-weight: 700; letter-spacing: 1px; color: var(--accent2); margin-bottom: 8px; }
+
+  /* ── NEXT BUTTON ── */
+  .next-wrap {
+    padding: 14px 18px calc(var(--safe-bot) + 14px);
+    background: var(--bg);
+    border-top: 1px solid var(--border);
+    display: none;
+    position: sticky;
+    bottom: 0;
+  }
+
+  .next-wrap.show { display: block; }
+
+  .next-btn {
+    width: 100%;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border: none;
+    border-radius: var(--radius);
+    padding: 16px;
+    color: white;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 0.3px;
+    transition: opacity 0.15s;
+  }
+
+  .next-btn:active { opacity: 0.85; }
+
+  /* ── RESULTS ── */
+  #results {
+    padding: calc(var(--safe-top) + 40px) 20px calc(var(--safe-bot) + 40px);
+    align-items: center;
+    text-align: center;
+    background: radial-gradient(ellipse at 50% 0%, #1a1f35 0%, var(--bg) 70%);
+  }
+
+  .result-icon { font-size: 64px; margin-bottom: 20px; }
+
+  .result-score {
+    font-size: 52px;
+    font-weight: 700;
+    font-family: 'JetBrains Mono', monospace;
+    background: linear-gradient(135deg, var(--green), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 6px;
+  }
+
+  .result-label { color: var(--muted); font-size: 14px; margin-bottom: 30px; }
+
+  .result-breakdown {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    width: 100%;
+    max-width: 360px;
+    margin-bottom: 30px;
+  }
+
+  .res-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px;
+    text-align: center;
+  }
+
+  .res-card .n { font-size: 26px; font-weight: 700; }
+  .res-card .l { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .res-card.good .n { color: var(--green); }
+  .res-card.bad .n { color: var(--red); }
+  .res-card.warn .n { color: var(--amber); }
+
+  .res-btns {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    max-width: 360px;
+  }
+
+  .res-btn {
+    padding: 16px;
+    border-radius: var(--radius);
+    border: none;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: opacity 0.15s;
+  }
+
+  .res-btn:active { opacity: 0.8; }
+
+  .res-btn.primary {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: white;
+  }
+
+  .res-btn.secondary {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    color: var(--text);
+  }
+
+  .res-btn.danger {
+    background: rgba(248,113,113,0.1);
+    border: 1.5px solid rgba(248,113,113,0.25);
+    color: var(--red);
+  }
+
+  /* ── BANK SCREEN ── */
+  #bank {
+    padding-top: var(--safe-top);
+    padding-bottom: calc(var(--safe-bot) + 20px);
+  }
+
+  .bank-header {
+    padding: 16px 18px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .bank-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .bank-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .bank-item:active { transform: scale(0.98); }
+  .bank-item-q { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 6px; line-height: 1.4; }
+  .bank-item-meta { font-size: 11px; color: var(--muted); display: flex; align-items: center; gap: 8px; }
+
+  .fail-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--red); display: inline-block;
+  }
+
+  .empty-state {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted);
+    font-size: 14px;
+    gap: 10px;
+    padding: 40px;
+    text-align: center;
+  }
+
+  .empty-icon { font-size: 48px; opacity: 0.4; }
+
+  /* ── SPINNER ── */
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .spinner {
+    width: 16px; height: 16px;
+    border: 2px solid rgba(108,138,255,0.2);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 6px;
+  }
+
+  /* ── TOAST ── */
+  #toast {
+    position: fixed;
+    bottom: calc(var(--safe-bot) + 80px);
+    left: 50%; transform: translateX(-50%);
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-size: 13px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+    white-space: nowrap;
+    z-index: 100;
+  }
+
+  #toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<!-- ═══════════════ HOME ═══════════════ -->
+<div id="home" class="screen active" style="position:relative">
+  <button onclick="clearApiKey()" style="position:absolute;top:calc(var(--safe-top) + 14px);right:18px;background:none;border:1px solid var(--border);border-radius:8px;padding:6px 10px;color:var(--muted);font-size:11px;cursor:pointer;font-family:inherit">⚙ API key</button>
+  <div class="home-badge">PSP · PROGRAMACIÓN DE SERVICIOS Y PROCESOS</div>
+  <div class="home-title">Examen 2026</div>
+  <div class="home-sub">152 preguntas · 5 bloques temáticos</div>
+
+  <div class="stats-row">
+    <div class="stat-card">
+      <span class="num" id="stat-total">152</span>
+      <span class="lbl">PREGUNTAS</span>
+    </div>
+    <div class="stat-card">
+      <span class="num" id="stat-bank">0</span>
+      <span class="lbl">BANCO FALLOS</span>
+    </div>
+    <div class="stat-card">
+      <span class="num" id="stat-done">0%</span>
+      <span class="lbl">COMPLETADO</span>
+    </div>
+  </div>
+
+  <div class="blocks-grid" id="blocks-grid"></div>
+
+  <div class="blocks-grid" style="margin-bottom:0">
+    <button class="block-btn b6" onclick="startBank()" id="bank-btn">
+      <div class="block-icon">🔥</div>
+      <div class="block-info">
+        <div class="block-name">Banco de Fallos</div>
+        <div class="block-meta" id="bank-meta">Repasa los que fallaste</div>
+      </div>
+      <div class="block-count" id="bank-count">0</div>
+    </button>
+  </div>
+</div>
+
+<!-- ═══════════════ QUIZ ═══════════════ -->
+<div id="quiz" class="screen">
+  <div class="quiz-header">
+    <button class="back-btn" onclick="goHome()">←</button>
+    <div>
+      <div class="quiz-title" id="quiz-block-name">Bloque</div>
+      <div class="quiz-sub" id="quiz-block-sub"></div>
+    </div>
+    <div class="score-chips">
+      <div class="chip chip-green" id="chip-ok">✓ 0</div>
+      <div class="chip chip-red" id="chip-err">✗ 0</div>
+    </div>
+  </div>
+  <div class="progress-bar-wrap">
+    <div class="progress-bar-fill" id="progress-fill" style="width:0%"></div>
+  </div>
+
+  <div class="quiz-body" id="quiz-body">
+    <div class="q-num" id="q-num">PREGUNTA 1 / 38</div>
+    <div class="q-text" id="q-text"></div>
+    <div class="options-list" id="options-list"></div>
+
+    <div class="feedback-box" id="feedback-box">
+      <div class="fb-header" id="fb-header"></div>
+      <div class="fb-text" id="fb-text"></div>
+    </div>
+
+    <div class="ai-actions" id="ai-actions" style="display:none">
+      <button class="ai-btn" onclick="aiSimilar()">✦ Pregunta similar</button>
+      <button class="ai-btn" onclick="aiHarder()">✦ Más difícil</button>
+    </div>
+
+    <div class="ai-loading" id="ai-loading">
+      <span class="spinner"></span> Generando pregunta con IA...
+    </div>
+
+    <div class="ai-result" id="ai-result">
+      <div class="ai-result-title">✦ PREGUNTA GENERADA POR IA</div>
+      <div id="ai-result-content"></div>
+    </div>
+  </div>
+
+  <div class="next-wrap" id="next-wrap">
+    <button class="next-btn" id="next-btn" onclick="nextQuestion()">Siguiente →</button>
+  </div>
+</div>
+
+<!-- ═══════════════ RESULTS ═══════════════ -->
+<div id="results" class="screen">
+  <div class="result-icon" id="res-icon">🎯</div>
+  <div class="result-score" id="res-score">0/0</div>
+  <div class="result-label" id="res-label">Resultado del bloque</div>
+
+  <div class="result-breakdown">
+    <div class="res-card good">
+      <div class="n" id="res-correct">0</div>
+      <div class="l">Correctas</div>
+    </div>
+    <div class="res-card bad">
+      <div class="n" id="res-wrong">0</div>
+      <div class="l">Falladas</div>
+    </div>
+    <div class="res-card warn">
+      <div class="n" id="res-pct">0%</div>
+      <div class="l">Acierto</div>
+    </div>
+    <div class="res-card">
+      <div class="n" id="res-bank" style="color:var(--amber)">0</div>
+      <div class="l">En banco</div>
+    </div>
+  </div>
+
+  <div class="res-btns">
+    <button class="res-btn danger" id="retry-fails-btn" onclick="retryFails()" style="display:none">
+      🔥 Repasar fallos de este bloque
+    </button>
+    <button class="res-btn primary" onclick="goHome()">← Volver al inicio</button>
+    <button class="res-btn secondary" id="retry-all-btn" onclick="retryAll()">↺ Repetir bloque completo</button>
+  </div>
+</div>
+
+<!-- ═══════════════ BANK SCREEN ═══════════════ -->
+<div id="bank" class="screen">
+  <div class="bank-header">
+    <button class="back-btn" onclick="goHome()">←</button>
+    <div>
+      <div class="quiz-title">Banco de Fallos</div>
+      <div class="quiz-sub" id="bank-sub">Preguntas falladas acumuladas</div>
+    </div>
+  </div>
+
+  <div class="bank-list" id="bank-list"></div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+//  QUESTIONS DATABASE (152 preguntas)
+// ═══════════════════════════════════════════════════════
+const QUESTIONS_DB = {"hilos":[{"q":"¿Qué efecto tiene invocar el método sleep() sobre un proceso o hilo?","options":["Detiene su ejecución de forma permanente.","Pausa el hilo durante una cantidad determinada de milisegundos.","Termina el método run() de forma ordenada.","Despierta a todos los hilos que están en espera."],"correct":1,"justification":"El método sleep() detiene la ejecución del hilo actual por el tiempo especificado en sus parámetros."},{"q":"Al comparar hilos y procesos, ¿cuál es una ventaja competitiva fundamental de los hilos?","options":["Los hilos no comparten memoria entre sí.","Son totalmente independientes del proceso que los creó.","Tienen un menor coste de creación y cambio de contexto.","Requieren una mayor reserva de recursos del sistema operativo."],"correct":2,"justification":"Crear un hilo es más rápido y económico en recursos que crear un proceso debido a que comparten memoria."},{"q":"¿Qué método se utiliza para despertar hilos bloqueados y NO para detener el hilo actual?","options":["notify().","wait().","sleep().","suspend()."],"correct":0,"justification":"Mientras wait o sleep bloquean el hilo, notify se usa para enviar una señal de reactivación a otros hilos."},{"q":"¿En qué momento se considera que un hilo ha pasado definitivamente al estado 'Muerto'?","options":["Cuando invoca el método yield().","Cuando finaliza la ejecución de su método run().","Cuando se bloquea por una operación de entrada/salida.","Al entrar en una sección crítica synchronized."],"correct":1,"justification":"Un hilo muere al terminar sus instrucciones en el método run() o por una parada externa."},{"q":"¿Cuándo es aconsejable utilizar un servidor concurrente en lugar de uno iterativo?","options":["Cuando solo se atiende una petición cada vez.","Cuando hay una gran cantidad de peticiones simultáneas.","Si el coste de recursos es muy elevado para procesos cortos.","Cuando se utiliza exclusivamente el protocolo UDP."],"correct":1,"justification":"Los servidores concurrentes permiten atender a múltiples clientes a la vez mediante hilos."},{"q":"¿Qué problema ocurre cuando dos procesos se bloquean esperando recursos que el otro retiene?","options":["Inanición.","Exclusión mutua.","Abrazo mortal (Deadlock).","Inconsistencia."],"correct":2,"justification":"El deadlock es el interbloqueo mutuo entre procesos por dependencia de recursos."},{"q":"¿Cuál es el rango de prioridad de un hilo en el lenguaje Java?","options":["Entre 1 y 10.","Entre 0 y 100.","Entre -20 y 20.","Entre 1 y 5."],"correct":0,"justification":"Java utiliza un rango de 1 (MIN_PRIORITY) a 10 (MAX_PRIORITY)."},{"q":"¿Qué palabra clave de Java evita que varios hilos usen a la vez un recurso compartido?","options":["volatile.","synchronized.","static.","final."],"correct":1,"justification":"synchronized bloquea el acceso de otros hilos al objeto marcado hasta que el actual termina."},{"q":"¿Qué método inicializa e inicia realmente la ejecución de un hilo en Java?","options":["start().","run().","init().","execute()."],"correct":0,"justification":"El método start() crea el hilo y llama automáticamente al método run()."},{"q":"¿Qué información mantiene un hilo como contexto propio e independiente dentro del proceso?","options":["Claves criptográficas.","Identificador, pila y contador de programa.","Código fuente y datos globales.","Recursos compartidos del sistema operativo."],"correct":1,"justification":"Aunque comparten datos del proceso, los hilos tienen su propia pila y registro contador."},{"q":"¿Qué ocurre cuando un hilo modifica un dato compartido en la memoria del proceso?","options":["Los demás hilos del mismo proceso pueden ver el cambio.","El cambio se pierde si el hilo no lo guarda en disco.","El sistema operativo bloquea el hilo inmediatamente.","Se crea una copia privada para el resto de hilos."],"correct":0,"justification":"Los hilos comparten la sección de datos del proceso padre."},{"q":"¿Qué función tienen los puntos de interrupción (breakpoints) en el desarrollo?","options":["Muestran valores para comprobar que los datos son correctos.","Determinan si el depurador debe parar la ejecución en un punto.","Permiten verificar la trazabilidad de la aplicación.","Todas las respuestas son correctas."],"correct":3,"justification":"Se usan como herramientas de depuración para analizar el estado del programa en puntos críticos."},{"q":"En Linux, ¿qué instrucción permite cambiar la prioridad de un proceso que ya está en ejecución?","options":["nice.","renice.","taskset.","ps -l."],"correct":1,"justification":"nice se usa al iniciar un proceso, mientras que renice modifica la prioridad de uno ya existente."},{"q":"¿Qué método de la clase Thread devuelve la REFERENCIA al objeto hilo que se está ejecutando actualmente (no su ID)?","options":["long getId()","static Thread currentThread()","void interrupt()","String getName()"],"correct":1,"justification":"Cuidado con la trampa: getId() devuelve un número (long), pero currentThread() devuelve la referencia al propio objeto (Thread) en ejecución."},{"q":"¿Cuál es la consecuencia funcional principal de NO utilizar hilos (servidor iterativo) en un servidor web?","options":["El servidor consume más memoria RAM.","Solo se puede atender una única petición a la vez (de forma secuencial).","El código es mucho más complejo de mantener.","No se pueden utilizar sockets TCP."],"correct":1,"justification":"Aunque los hilos ahorran recursos, la razón funcional de usarlos es que un servidor 'sin hilos' (iterativo) bloquea a todos los usuarios hasta que termina con el primero."},{"q":"RA2 - ¿Qué estado tiene un hilo creado pero aún no ejecutado?","options":["Muerto","Bloqueado","Ejecución","Listo"],"correct":3,"justification":"Estado del ciclo de vida: el hilo ha sido creado y está a la espera de que el planificador le asigne la CPU."},{"q":"RA1 - ¿Qué elemento permite ejecutar tareas de forma concurrente dentro de un proceso?","options":["Servicios","Ejecutables","Hilos","Drivers"],"correct":2,"justification":"Los hilos (threads) son las unidades que comparten los recursos del proceso padre para trabajar simultáneamente."},{"q":"RA1 - ¿Qué ocurre si dos procesos acceden sin control a un recurso compartido?","options":["Los procesos se detienen","El sistema siempre lo evita automáticamente","Se crea un nuevo hilo","Pueden producirse inconsistencias"],"correct":3,"justification":"Sin mecanismos de sincronización (como semáforos o monitores), los datos pueden corromperse (condición de carrera)."},{"q":"RA2 - ¿Qué método pausa un hilo durante un tiempo determinado?","options":["stop()","sleep()","notify()","wait()"],"correct":1,"justification":"sleep() detiene la ejecución el tiempo especificado en milisegundos."},{"q":"RA4 - ¿Qué caracteriza a un servidor concurrente?","options":["No usa hilos","Atiende varias peticiones a la vez","Usa solo UDP","Atiende una petición cada vez"],"correct":1,"justification":"Utiliza hilos o procesos hijos para gestionar múltiples clientes simultáneamente."},{"q":"RA2 - ¿Qué estado indica que un hilo espera un recurso o evento?","options":["Listo","Bloqueado","Terminado","Ejecución"],"correct":1,"justification":"El estado 'Bloqueado' (Blocked/Waiting) ocurre cuando el hilo se detiene esperando algo (I/O, un monitor, etc.) y libera la CPU."},{"q":"RA2 - ¿Qué técnica evita condiciones de carrera entre hilos?","options":["Planificación","Serialización","Sincronización","Compilación"],"correct":2,"justification":"La sincronización (con synchronized) coordina el acceso a recursos compartidos para evitar inconsistencias (condiciones de carrera)."},{"q":"RA2 - ¿Qué ocurre cuando un hilo modifica un dato compartido?","options":["El cambio se pierde","El hilo se bloquea","El dato se copia automáticamente","Los demás hilos pueden ver el cambio"],"correct":3,"justification":"Al compartir el mismo espacio de memoria del proceso, cualquier cambio en una variable común es visible inmediatamente para los demás hilos."},{"q":"RA3 - ¿Para qué se usan hilos en servidores de red?","options":["Reducir la seguridad","Atender múltiples clientes simultáneamente","Eliminar la planificación","Evitar el uso de sockets"],"correct":1,"justification":"El uso de hilos permite crear servidores concurrentes que no dejan esperando a un cliente mientras atienden a otro."},{"q":"¿Qué problema de la programación concurrente se produce cuando dos procesos se quedan bloqueados esperando recursos que posee el otro?","options":["Inanición.","Exclusión mutua.","Abrazo mortal (Deadlock).","Condición de carrera."],"correct":2,"justification":"El Abrazo mortal (Deadlock) ocurre cuando hay un bloqueo mutuo por espera de recursos."},{"q":"¿Qué diferencia principal existe entre un Hilo y un Proceso en cuanto a la memoria?","options":["Los procesos comparten la memoria entre sí; los hilos no.","Un proceso comparte toda la memoria reservada con sus hilos.","Los hilos tienen su propia sección de código y datos independiente del proceso.","No existe diferencia, ambos son independientes."],"correct":1,"justification":"Un proceso solamente puede crear hilos para sí mismo, y dichos hilos comparten toda la memoria reservada para el proceso."},{"q":"¿Cuál de los siguientes recursos es propio de un hilo y NO se comparte con el resto de hilos del mismo proceso?","options":["Sección de código.","Sección de datos.","Recursos del sistema operativo.","Contador de programa y pila."],"correct":3,"justification":"Un hilo posee su propio contador de programa, juego de registros y espacio de pila. El código y los datos son comunes."},{"q":"En la clase Thread, ¿cuál es la diferencia principal entre los métodos start() y run()?","options":["start() contiene el código a ejecutar y run() inicializa el hilo.","run() crea el hilo en el sistema operativo y start() lo detiene.","start() inicializa el hilo y llama internamente a run(), que contiene el código de ejecución.","Ambos métodos hacen exactamente lo mismo, son sinónimos."],"correct":2,"justification":"start() inicializa el hilo, mientras que run() es el que contiene las instrucciones a ejecutar."},{"q":"¿Qué recursos comparten los hilos que pertenecen a un mismo proceso?","options":["El contador de programa y la pila.","La sección de código, la sección de datos y los recursos del sistema operativo.","Únicamente los registros de la CPU.","Los hilos no comparten nada, son totalmente independientes como los procesos."],"correct":1,"justification":"Los hilos comparten código, datos y recursos del SO. Lo que tienen propio es la pila, registros y contador."},{"q":"¿Cuál es el rango de valores enteros para definir la prioridad de un hilo en Java?","options":["De 0 a 100.","De 1 a 10.","De 0 a 1.","De 1 a 5."],"correct":1,"justification":"La prioridad se mide mediante un rango de valores enteros entre 1 (mínima) y 10 (máxima)."},{"q":"¿Qué ocurre si un hilo invoca el método wait()?","options":["El hilo finaliza su ejecución inmediatamente (estado Muerto).","El hilo se duerme un tiempo fijo y despierta solo.","El hilo entra en estado Bloqueado y espera a que otro hilo invoque notify() o notifyAll().","El hilo cede su turno voluntariamente pero sigue en estado Ejecutable."],"correct":2,"justification":"Al invocar wait(), el hilo se bloquea hasta recibir un notify() o notifyAll()."},{"q":"¿Qué problema de sincronización se define como 'dos hilos se quedan bloqueados porque cada uno espera un recurso que tiene el otro'?","options":["Inanición (Starvation).","Condición de carrera.","Inconsistencia de memoria.","Interbloqueo (Deadlock)."],"correct":3,"justification":"El interbloqueo ocurre cuando un hilo espera un recurso asociado a otro hilo que también está bloqueado."},{"q":"¿Para qué sirve la palabra clave synchronized en Java?","options":["Para aumentar la prioridad del hilo.","Para crear un nuevo hilo asociado a un proceso.","Para marcar un bloque de código u objeto como ocupado, obligando a otros hilos a esperar para acceder.","Para detener la ejecución de todos los hilos del sistema."],"correct":2,"justification":"synchronized marca un objeto/fichero como ocupado; si otro hilo intenta acceder, se queda bloqueado esperando."},{"q":"En la gestión de hilos por parte del Sistema Operativo, ¿en qué consiste el 'Multihilo apropiativo'?","options":["El sistema operativo determina cuándo debe haber un cambio de contexto (quita el control al hilo).","El propio hilo decide cuándo abandonar el control de la CPU.","El hilo se apropia de todos los recursos y no los libera hasta terminar.","Es un sistema que solo permite un hilo por proceso."],"correct":0,"justification":"En el multihilo apropiativo, el SO decide cuándo hacer el cambio de contexto, evitando que un hilo monopolice la CPU."},{"q":"¿Qué ventaja principal tienen los hilos frente a los procesos?","options":["Los hilos son más seguros porque no comparten memoria.","La creación de un hilo tiene un coste menor que la creación de un proceso.","Los hilos no pueden entrar en estado de bloqueo.","Los hilos no necesitan sincronización."],"correct":1,"justification":"Crear un hilo cuesta menos porque no necesita reservar memoria nueva (la comparte), y el cambio de contexto es más rápido."},{"q":"¿Qué herramienta se utiliza en la depuración para detener la ejecución de la aplicación en una línea concreta y examinar valores?","options":["El recolector de basura (Garbage Collector).","El método yield().","Los puntos de interrupción (Breakpoints).","El método stop()."],"correct":2,"justification":"Los puntos de interrupción indican al depurador que pare o pause la ejecución en un punto determinado."},{"q":"¿Qué estado adquiere un hilo cuando se invoca el método sleep(long milis)?","options":["Nuevo.","Ejecutable.","Muerto.","Bloqueado."],"correct":3,"justification":"Cuando se invoca sleep(), el hilo pasa a estado Bloqueado durante el tiempo especificado."},{"q":"Si queremos implementar un servidor que pueda atender a 50 clientes simultáneamente sin hacerles esperar, ¿qué técnica debemos usar?","options":["Crear un array de 50 sockets.","Usar el protocolo UDP obligatoriamente.","Usar un bucle infinito en el hilo principal.","Crear un nuevo hilo (Thread) por cada petición de cliente aceptada."],"correct":3,"justification":"Para atender peticiones simultáneas en un servidor, se debe crear un hilo para cada cliente."}],"procesos":[{"q":"¿Qué fase del control de acceso se encarga de verificar fehacientemente que el usuario es quien dice ser (ej. mediante contraseña)?","options":["Identificación.","Autorización.","Autenticación.","Registro."],"correct":2,"justification":"La autenticación es el proceso donde el sistema comprueba la identidad declarada del usuario."},{"q":"¿Cómo se denomina al último paso del control de acceso que ofrece el recurso si el proceso previo fue exitoso?","options":["Autorización.","Verificación.","Autenticación.","Identificación."],"correct":0,"justification":"La autorización es la fase final que concede el acceso a la información o recursos tras una autenticación positiva."},{"q":"¿Cuál es la función principal de las tres condiciones de Bernstein?","options":["Determinar si dos instrucciones pueden ejecutarse concurrentemente.","Generar claves públicas y privadas para RSA.","Establecer un túnel seguro mediante SSH.","Sincronizar hilos mediante el uso de monitores."],"correct":0,"justification":"Bernstein estableció condiciones de intersección vacía entre conjuntos de lectura y escritura para permitir la ejecución simultánea."},{"q":"¿Qué técnica divide un problema grande en partes pequeñas para resolverlas simultáneamente en equipos multiprocesadores?","options":["Programación distribuida.","Programación paralela.","Programación iterativa.","Programación monohilo."],"correct":1,"justification":"La programación paralela ejecuta muchas instrucciones a la vez dividiendo problemas de grandes dimensiones."},{"q":"¿Qué define a los archivos ejecutables desde el punto de vista del sistema operativo?","options":["Son archivos de texto con el código fuente original.","Son carpetas que contienen exclusivamente librerías Java.","Son archivos binarios con instrucciones en lenguaje máquina.","Son procesos que requieren siempre una interfaz gráfica."],"correct":2,"justification":"Los ejecutables contienen el código fuente ya traducido por el compilador para ser entendido directamente por el microprocesador."},{"q":"¿Qué característica define específicamente a un 'servicio'?","options":["Se ejecuta en segundo plano y carece de interfaz gráfica.","Es controlado permanentemente por el usuario de forma directa.","Finaliza inmediatamente tras su primera instrucción.","Solo puede ejecutarse en sistemas monohilo."],"correct":0,"justification":"Los servicios son procesos que funcionan en segundo plano, destinados a tareas de mantenimiento o procesos continuos sin interacción directa."},{"q":"¿Qué función se utiliza específicamente en sistemas Windows para solicitar la creación de un nuevo proceso?","options":["fork().","createProcess().","new Thread().","start()."],"correct":1,"justification":"Mientras que en Linux se usa fork(), en Windows la función nativa es createProcess()."},{"q":"¿En qué capa del modelo TCP/IP se ubican protocolos como HTTP, FTP y DNS?","options":["Capa de Internet.","Capa de Transporte.","Capa de Aplicación.","Capa de Red."],"correct":2,"justification":"La capa de aplicación maneja protocolos de alto nivel que implementan servicios para el usuario."},{"q":"¿Qué comando de Linux muestra los procesos activos detallando el UID y el PID?","options":["ls -l.","ps -f.","renice.","taskset."],"correct":1,"justification":"El comando ps -f es el encargado de listar los procesos activos con su información técnica."},{"q":"¿Cuáles son las operaciones estándares de los servicios web REST?","options":["SYN, ACK, FIN.","POST, GET, PUT y DELETE.","START, RUN, STOP.","BIND, ACCEPT, SEND."],"correct":1,"justification":"REST basa su uso en los verbos estándar de HTTP."},{"q":"¿Cómo se denomina a un proceso finalizado que aún no ha liberado sus recursos en Unix?","options":["Huérfano.","Zombie.","Activo.","Bloqueado."],"correct":1,"justification":"Los procesos zombies han terminado su ejecución pero mantienen su entrada en la tabla de procesos."},{"q":"La capacidad de contar con servidores réplica para evitar interrupciones se conoce como:","options":["Balanceo de carga.","Alta disponibilidad.","Programación paralela.","Encadenamiento."],"correct":1,"justification":"La alta disponibilidad garantiza un servicio cercano al 100% mediante réplicas activas."},{"q":"¿Qué servicio asegura que un emisor no pueda negar haber enviado un mensaje?","options":["Confidencialidad.","No repudio en origen.","Disponibilidad.","Integridad."],"correct":1,"justification":"El no repudio en origen aporta pruebas de que el emisor envió el mensaje."},{"q":"¿Cuál es el objetivo principal de la planificación de procesos del sistema operativo?","options":["Eliminar procesos inactivos permanentemente.","Asignar memoria RAM de forma estática.","Decidir qué proceso usa la CPU en cada momento.","Compilar los archivos ejecutables."],"correct":2,"justification":"El planificador gestiona el reparto del tiempo de procesador entre los procesos preparados."},{"q":"¿Qué herramienta permite supervisar el estado de disponibilidad inmediata de un servicio?","options":["Editor de código.","Compilador.","Herramientas de monitorización.","Depurador."],"correct":2,"justification":"Los administradores usan herramientas de monitorización para realizar acciones de mantenimiento inmediatas."},{"q":"¿Qué componente documenta el catálogo de funciones accesibles de un servicio para desarrolladores?","options":["BCP.","API.","RMI.","Socket."],"correct":1,"justification":"Una API proporciona los métodos y parámetros definidos para interactuar con un software."},{"q":"En las condiciones de Bernstein, si la intersección entre el Conjunto de Lectura 1 (L1) y el Conjunto de Lectura 2 (L2) es vacía, ¿podemos asegurar que hay concurrencia?","options":["Sí, porque no comparten datos leídos.","No, porque las condiciones de Bernstein solo comparan Escritura vs Lectura o Escritura vs Escritura.","Sí, es la condición principal de Bernstein.","No, porque siempre debe haber intersección en las lecturas."],"correct":1,"justification":"Pregunta trampa: Dos procesos pueden leer lo mismo a la vez sin problemas. Bernstein se centra en conflictos de modificación (Escritura). Saber solo L1 y L2 no determina si hay conflicto de escritura."},{"q":"¿Cuál de las siguientes NO es una de las tres condiciones de Bernstein necesarias para que dos procesos (P1 y P2) puedan ejecutarse concurrentemente?","options":["L(P1) ∩ E(P2) = Ø (Intersección vacía entre Lectura de 1 y Escritura de 2).","E(P1) ∩ L(P2) = Ø (Intersección vacía entre Escritura de 1 y Lectura de 2).","E(P1) ∩ E(P2) = Ø (Intersección vacía entre Escrituras de ambos).","L(P1) ∩ L(P2) = Ø (Intersección vacía entre Lecturas de ambos)."],"correct":3,"justification":"Bernstein NO prohíbe que dos procesos lean la misma variable a la vez. El conflicto solo existe si al menos uno de ellos escribe (modifica) el dato."},{"q":"En la notación de las condiciones de Bernstein, ¿qué representa habitualmente el conjunto E(Pi)?","options":["El conjunto de variables de Entrada (Lectura).","El conjunto de Errores del proceso.","El conjunto de variables de Escritura (Salida/Modificación).","El conjunto de Estados del proceso."],"correct":2,"justification":"E(Pi) o W(Pi) representa el conjunto de Escritura (Write/Output), es decir, las variables que el proceso va a alterar durante su ejecución."},{"q":"Si se cumplen las tres condiciones de Bernstein entre dos procesos, ¿qué propiedad importante se garantiza?","options":["Que los procesos se ejecutarán más rápido.","El determinismo: el resultado final será el mismo independientemente de si se ejecutan secuencial o concurrentemente.","Que no habrá interbloqueos (Deadlocks) bajo ninguna circunstancia.","Que el sistema operativo asignará más prioridad a estos procesos."],"correct":1,"justification":"El objetivo de Bernstein es garantizar que la ejecución paralela no corrompa los datos, asegurando que el resultado sea determinista (igual que si fueran uno detrás de otro)."},{"q":"RA1 - ¿Qué es un proceso en un sistema operativo?","options":["Un hilo independiente del hardware","Un programa en ejecución gestionado por el sistema operativo","Un archivo ejecutable almacenado en disco","Un servicio exclusivo del usuario"],"correct":1,"justification":"Definición literal: Un proceso es un programa dinámico en ejecución, a diferencia del archivo estático en disco."},{"q":"RA1 - ¿Qué estado indica que un proceso está usando la CPU?","options":["Bloqueado","Ejecución","Listo","Terminado"],"correct":1,"justification":"El proceso en ejecución es el que tiene el control del procesador en ese instante."},{"q":"RA1 - ¿Qué objetivo tiene la planificación de procesos?","options":["Decidir qué proceso usa la CPU en cada momento","Compilar los ejecutables","Eliminar procesos inactivos","Asignar memoria permanente a los procesos"],"correct":0,"justification":"El planificador del SO decide los turnos de uso del procesador."},{"q":"RA4 - ¿Qué protocolo utiliza XML para servicios web?","options":["SOAP","UDP","RPC","REST"],"correct":0,"justification":"SOAP utiliza exclusivamente XML para el formato de sus mensajes."},{"q":"RA1 - ¿Qué característica define a un servicio del sistema?","options":["Solo se inicia manualmente","Se ejecuta en segundo plano sin interacción directa del usuario","Finaliza tras una única ejecución","Siempre requiere interfaz gráfica"],"correct":1,"justification":"Los servicios (demonios) funcionan en background sin interfaz de usuario."},{"q":"RA5 - ¿Qué objetivo tiene la programación segura?","options":["Aumentar el tamaño del código","Eliminar la reutilización","Proteger datos y aplicaciones","Evitar el uso de librerías"],"correct":2,"justification":"El objetivo fundamental es garantizar la confidencialidad, integridad y disponibilidad, protegiendo los datos y la lógica de la aplicación."},{"q":"RA4 - ¿Qué componente documenta funciones accesibles de un servicio?","options":["Balanceador","Switch","API","Servidor dedicado"],"correct":2,"justification":"Una API (Interfaz de Programación de Aplicaciones) define y documenta cómo interactuar con el servicio."},{"q":"RA1 - ¿Qué herramienta permite monitorizar procesos en ejecución?","options":["Editor de texto","IDE","Administrador de tareas","Compilador"],"correct":2,"justification":"El Administrador de tareas (o 'ps' / 'top' en Linux) permite visualizar y gestionar los procesos activos."},{"q":"RA1 - ¿Qué caracteriza a la programación paralela?","options":["Ejecución secuencial optimizada","Ejecución simultánea en varios procesadores o núcleos","Uso exclusivo de red","Ausencia de comunicación entre tareas"],"correct":1,"justification":"La clave de la programación paralela es dividir el trabajo para usar varios núcleos a la vez (simultaneidad)."},{"q":"Para que dos instrucciones se puedan ejecutar concurrentemente, según Bernstein, deben cumplirse tres condiciones. ¿Cuál de las siguientes es una de ellas?","options":["La intersección de los conjuntos de lectura debe ser nula.","La intersección del conjunto de lectura de una con el de escritura de la otra debe ser vacía.","Ambas instrucciones deben escribir en la misma variable.","El tiempo de ejecución debe ser idéntico."],"correct":1,"justification":"Se debe cumplir que L(Si) ∩ E(Sj) = Ø, es decir, lo que lee uno no debe ser escrito por el otro al mismo tiempo."},{"q":"En programación distribuida, ¿cómo se denomina al conjunto de máquinas interconectadas que trabajan como una sola?","options":["Cluster.","Grid.","Thread pool.","Socket group."],"correct":1,"justification":"Este conjunto de máquinas separadas físicamente que operan interconectadas se conoce como grid."},{"q":"¿En qué estado se encuentra un proceso que ha interrumpido su ejecución y está esperando a que termine una operación (por ejemplo, una lectura de datos)?","options":["Activo.","Preparado.","Zombie.","Bloqueado."],"correct":3,"justification":"Está Bloqueado a la espera de que termine la operación que provocó la pausa."},{"q":"¿Qué función se utiliza en sistemas Linux para crear un nuevo proceso (proceso hijo)?","options":["createProcess()","newProcess()","fork()","start()"],"correct":2,"justification":"En Linux se utiliza fork(), mientras que createProcess() es para Windows."},{"q":"¿Qué es un 'Servicio' en el contexto de sistemas operativos?","options":["Un proceso que siempre tiene interfaz gráfica.","Un proceso que se ejecuta en primer plano controlado por el usuario.","Un proceso que se ejecuta en segundo plano y carece de interfaz gráfica.","Un archivo ejecutable con extensión .bat."],"correct":2,"justification":"Los servicios se ejecutan en segundo plano, no son controlados directamente por el usuario y carecen de interfaz gráfica."},{"q":"¿Qué señal se envía a los procesos para interrumpir su ejecución (típicamente al pulsar Ctrl+C)?","options":["SIGKILL","SIGINT","SLEEP","KILL"],"correct":1,"justification":"SIGINT se envía al pulsar Ctrl+C para interrumpir la ejecución."},{"q":"¿Qué comando utilizarías en Linux para ver la información de los procesos activos (UID, PID, PPID...)?","options":["ls -l","ps -f","tasklist","process -all"],"correct":1,"justification":"El comando es ps -f."},{"q":"¿Qué ocurre en el '3-way handshake' (apretón de manos de 3 vías) del protocolo TCP?","options":["Se envían los datos duplicados tres veces para asegurar la llegada.","El cliente y el servidor intercambian mensajes SYN, SYN+ACK y ACK para establecer la conexión antes de enviar datos.","Se desconecta la comunicación en tres pasos seguros.","Es el proceso de autenticación de usuario en tres fases."],"correct":1,"justification":"Es el proceso de establecimiento de conexión TCP: SYN (petición), SYN+ACK (confirmación), ACK (confirmación cliente)."},{"q":"¿Qué función cumple un Balanceador de Carga en un servicio de red?","options":["Encriptar los datos para que viajen seguros.","Asignar IPs dinámicas a los clientes.","Distribuir las peticiones entre distintos servidores para evitar colapsos y optimizar el rendimiento.","Convertir nombres de dominio en direcciones IP."],"correct":2,"justification":"Los balanceadores distribuyen la carga masiva entre varios servidores para evitar colapsos."},{"q":"En el contexto de servicios web REST, ¿qué formato de intercambio de datos es el más extendido por ser ligero?","options":["XML.","HTML.","JSON.","CSV."],"correct":2,"justification":"REST suele usar JSON, mientras que SOAP usa obligatoriamente XML."},{"q":"En un análisis de Bernstein, el enunciado solo indica que L(S1) ∩ L(S2) = ∅ (los conjuntos de lectura son disjuntos). ¿Pueden ejecutarse concurrentemente?","options":["Sí, al no haber conflicto de lectura es totalmente seguro.","No, nunca pueden ejecutarse concurrentemente si los conjuntos son disjuntos.","Sí, pero solo si las instrucciones son atómicas.","No se puede determinar con esa información."],"correct":3,"justification":"TRAMPA: Bernstein ignora las lecturas entre sí, pero el enunciado OCULTA los conjuntos de Escritura (E). Si ambos escriben en la misma variable, fallará. Sin saber E, no puedes asegurar nada."},{"q":"Dadas las instrucciones S1: c = a - b y S2: x = c + n. Para que puedan ejecutarse concurrentemente deben cumplirse las condiciones de Bernstein. ¿Cuál de las siguientes condiciones es la que NO se cumple (impidiendo el paralelismo)?","options":["E(S1) ∩ L(S2) = ∅","L(S1) ∩ E(S2) = ∅","E(S1) ∩ E(S2) = ∅","L(S1) ∩ L(S2) = ∅"],"correct":0,"justification":"Falla la condición de Dependencia de Flujo (Escritura-Lectura). La instrucción S1 escribe 'c' y la S2 necesita leer esa 'c'. Por tanto, la intersección E(S1)∩L(S2) NO es vacía (contiene 'c'), así que la condición de que sea igual a vacío (= ∅) no se cumple."}],"seguridad":[{"q":"Según las prácticas de programación segura, ¿cómo deben tratarse los archivos de la aplicación para evitar modificaciones externas?","options":["Deben ser archivos ejecutables públicos.","Deben tener permisos de escritura total.","Deben ser siempre archivos ocultos.","Deben ser de solo lectura."],"correct":3,"justification":"El manual indica que los archivos de la aplicación deben ser de solo lectura para prevenir que un usuario los modifique malintencionadamente."},{"q":"¿Qué técnica de autenticación reduce el factor humano utilizando rasgos como la retina o la huella dactilar?","options":["Cifrado asimétrico.","Biometría.","Firma digital.","Certificación."],"correct":1,"justification":"La biometría engloba lectores físicos que ofrecen mayor seguridad al eliminar la vulnerabilidad del factor humano."},{"q":"En Java, ¿qué método de la clase Cipher realiza la operación final de encriptación o desencriptación de los datos?","options":["init().","update().","doFinal().","getInstance()."],"correct":2,"justification":"El método doFinal() es el encargado de ejecutar la transformación criptográfica final sobre los datos."},{"q":"¿Qué protocolo de transporte se caracteriza por ser orientado a conexión y fiable?","options":["UDP.","TCP.","IP.","ICMP."],"correct":1,"justification":"TCP asegura la entrega ordenada y fiable de paquetes mediante una conexión previa."},{"q":"¿Cuántos bits genera un resumen mediante el algoritmo hash MD5?","options":["160 bits.","128 bits.","256 bits.","64 bits."],"correct":1,"justification":"El algoritmo MD5 genera resúmenes de longitud fija de 128 bits."},{"q":"La seguridad del algoritmo RSA se basa en la dificultad de resolver:","options":["La sustitución de caracteres.","La factorización de números enteros.","La exclusión mutua.","La condición de carrera."],"correct":1,"justification":"RSA utiliza pares de números hallados mediante operaciones con números primos grandes."},{"q":"¿Qué puerto utiliza habitualmente el protocolo SSH?","options":["80.","443.","22.","21."],"correct":2,"justification":"El puerto estándar para la comunicación segura mediante el intérprete de órdenes seguro es el 22."},{"q":"¿Qué puerto utiliza el protocolo HTTPS por defecto?","options":["80.","22.","443.","21."],"correct":2,"justification":"HTTPS añade seguridad a HTTP utilizando el puerto 443."},{"q":"Para una programación segura: un código limpio aporta seguridad, la reutilización debe ser de código revisado y se debe eliminar el código obsoleto. ¿Es correcto?","options":["Sí, todas son prácticas recomendadas.","No, el código obsoleto no afecta.","No, no se debe reutilizar nunca código.","Sí, pero solo si es código Java."],"correct":0,"justification":"Son principios fundamentales para evitar confusiones y vulnerabilidades en la aplicación."},{"q":"¿Qué información se considera 'sensible' en una base de datos?","options":["Solo la contraseña.","Solo el DNI.","Solo la dirección física.","Contraseña, DNI y dirección física (todas las anteriores)."],"correct":3,"justification":"Se considera sensible cualquier información privada del usuario."},{"q":"¿Qué define fundamentalmente a un protocolo criptográfico?","options":["Un lenguaje de programación nuevo.","Reglas para la seguridad en la comunicación de sistemas.","Un algoritmo de compresión de datos.","Un tipo de sistema operativo seguro."],"correct":1,"justification":"Especifican cómo utilizar algoritmos para establecer claves, autenticar entidades, etc."},{"q":"¿Qué tipo de criptografía utiliza una única clave compartida para cifrar y descifrar?","options":["Criptografía asimétrica.","Criptografía simétrica.","Función Hash.","Firma digital."],"correct":1,"justification":"En la simétrica, emisor y receptor comparten la misma clave secreta."},{"q":"Según los casos prácticos, ¿qué algoritmo se utiliza en Java para cifrar una variable 'Mensaje' en modo ECB?","options":["RSA.","MD5.","AES.","SHA-256."],"correct":2,"justification":"El caso práctico 2 requiere programar una clase usando AES/ECB para cifrado."},{"q":"¿Qué método estático de la clase Cipher se utiliza para crear una instancia del objeto especificando el algoritmo de cifrado (ej: 'AES/ECB/PKCS5Padding')?","options":["Cipher.init()","Cipher.getInstance()","Cipher.create()","Cipher.update()"],"correct":1,"justification":"El método getInstance() es el encargado de instanciar la clase Cipher con la transformación solicitada para poder usarla."},{"q":"RA5 - ¿Qué práctica mejora la seguridad del código?","options":["Evitar revisiones","Validar los datos de entrada","Usar solo bajo nivel","Reutilizar código obsoleto"],"correct":1,"justification":"La validación de inputs es fundamental para evitar inyecciones y errores no controlados."},{"q":"RA5 - ¿Qué elemento es clave en protocolos criptográficos?","options":["Gestión de hilos","Balanceo de carga","Planificación de procesos","Establecimiento de claves"],"correct":3,"justification":"Los protocolos seguros definen cómo se generan, intercambian y establecen las claves para el cifrado."},{"q":"RA5 - ¿Qué define un protocolo criptográfico?","options":["Un algoritmo aislado","Un sistema operativo","Un lenguaje de programación","Reglas para comunicaciones seguras"],"correct":3,"justification":"Conjunto de reglas que gobiernan el intercambio seguro de información."},{"q":"RA5 - ¿Qué práctica es segura al trabajar con archivos?","options":["Abrirlos en modo escritura siempre","Ejecutarlos desde la app","Controlar permisos de acceso","Usar rutas absolutas públicas"],"correct":2,"justification":"La restricción de permisos es básica para la seguridad de la información."},{"q":"RA5 - ¿Qué criptografía utiliza una sola clave?","options":["Clave simétrica","Hash","Clave pública","Biométrica"],"correct":0,"justification":"La criptografía simétrica utiliza la misma clave tanto para cifrar como para descifrar (clave compartida)."},{"q":"RA5 - ¿Qué fase concede acceso a recursos tras verificar identidad?","options":["Identificación","Registro","Autenticación","Autorización"],"correct":3,"justification":"Una vez autenticado (sabemos quién eres), la Autorización es la fase que determina qué puedes hacer o tocar."},{"q":"RA5 - ¿Qué tipo de información debe cifrarse siempre?","options":["Código fuente","Archivos temporales","Datos públicos","Información sensible"],"correct":3,"justification":"Toda información confidencial o sensible (contraseñas, datos personales, bancarios) debe protegerse mediante cifrado."},{"q":"¿Cuál de las siguientes afirmaciones sobre las prácticas de programación segura es correcta?","options":["No es necesario validar los datos introducidos si la aplicación es interna.","Se debe verificar siempre que los datos introducidos son válidos, tanto parámetros como ficheros.","Se recomienda mantener el código obsoleto por si se necesita en el futuro.","Las rutas de los ficheros deben ser relativas para mayor seguridad."],"correct":1,"justification":"Es necesario verificar siempre que los datos introducidos son válidos, tanto los parámetros, como la información y los ficheros."},{"q":"En el contexto de la criptografía, ¿qué es una función hash o de una sola vía?","options":["Una función que convierte una cadena en otra de longitud variable.","Una función que permite cifrar y descifrar un mensaje con la misma clave.","Una función que, dada cualquier cadena, la convierte en otra de longitud fija y es imposible volver al texto original.","Un algoritmo de criptografía asimétrica utilizado para el intercambio de claves."],"correct":2,"justification":"Una función hash convierte cualquier cadena en otra de longitud fija y es un 'camino imposible' (no reversible)."},{"q":"¿Qué caracteriza a los algoritmos de criptografía simétrica (clave secreta)?","options":["Utilizan una clave pública para cifrar y una privada para descifrar.","El emisor y el receptor comparten una única clave para cifrar y descifrar.","Son algoritmos basados exclusivamente en funciones hash.","La seguridad radica en la factorización de números enteros grandes."],"correct":1,"justification":"En los algoritmos de clave secreta (simétrica), tanto el emisor como el receptor comparten una única clave."},{"q":"¿Cuál de los siguientes algoritmos NO se considera seguro actualmente debido a la longitud de su clave o vulnerabilidades?","options":["AES con clave de 256 bits.","RSA.","SHA-2.","DES (clave de 56 bits) y SHA-1."],"correct":3,"justification":"DES utiliza una clave de 56 bits y SHA-1 resúmenes de 160 bits, por lo que no se consideran seguros."},{"q":"En una política de seguridad, ¿qué garantiza el 'No repudio'?","options":["Que los datos están a disposición de quienes deban acceder a ellos.","Que el receptor conoce la identidad del emisor.","Permite probar la participación de las partes en una comunicación, impidiendo que nieguen el envío o recepción.","Que los mensajes solo pueden ser leídos por personas autorizadas."],"correct":2,"justification":"El no repudio permite probar la participación de las partes; el emisor no puede negar el envío y el receptor no puede negar la recepción."},{"q":"¿Cuál es la diferencia entre identificación y autenticación?","options":["La identificación comprueba la contraseña y la autenticación el usuario.","La identificación es cuando el usuario indica quién es, y la autenticación es cuando el sistema comprueba que es quien dice ser.","Son sinónimos, significan exactamente lo mismo.","La autorización ocurre antes que la identificación."],"correct":1,"justification":"Identificación es indicar el usuario; Autenticación es verificar que el usuario es quien dice ser."},{"q":"¿Qué puerto utiliza el protocolo seguro SSH para la comunicación?","options":["Puerto 80.","Puerto 443.","Puerto 21.","Puerto 22."],"correct":3,"justification":"El protocolo SSH utiliza el puerto 22."},{"q":"En Java, ¿qué clase se utiliza para generar claves en criptografía simétrica?","options":["KeyPairGenerator.","MessageDigest.","KeyGenerator.","Cipher."],"correct":2,"justification":"La clase KeyGenerator se usa para cifrado simétrico (SecretKey)."},{"q":"¿Qué algoritmo es la base de la firma digital y utiliza un par de claves (pública y privada)?","options":["MD5.","RSA.","AES.","Triple DES."],"correct":1,"justification":"RSA es un algoritmo de clave pública (asimétrica) y es la base de la firma digital."},{"q":"¿Qué información de usuario se considera sensible y debe ir cifrada en la base de datos?","options":["Contraseñas.","Datos personales (DNI, cuenta bancaria).","Número de tarjeta de crédito.","Todas las respuestas son correctas."],"correct":3,"justification":"Se considera sensible contraseñas, datos personales, DNI, tarjetas de crédito, etc."},{"q":"¿Qué puerto utiliza por defecto el protocolo HTTP seguro (HTTPS) en la capa de transporte?","options":["80.","21.","22.","443."],"correct":3,"justification":"HTTPS usa el puerto 443 (HTTP usa el 80, SSH el 22)."},{"q":"¿En qué se diferencia un Servidor Iterativo de uno Concurrente?","options":["El iterativo usa TCP y el concurrente UDP.","El iterativo atiende peticiones de una en una, mientras que el concurrente atiende varias simultáneamente.","El iterativo es para webs y el concurrente para correo.","No hay diferencia, son sinónimos."],"correct":1,"justification":"El iterativo procesa secuencialmente (espera a terminar uno para coger otro); el concurrente procesa en paralelo."}],"red":[{"q":"¿Qué mecanismo permite la comunicación entre aplicaciones abstrayendo al usuario de las capas inferiores?","options":["Sockets.","RMI.","DatagramPacket.","Tuberías."],"correct":0,"justification":"Un socket crea un canal de comunicación entre aplicaciones a través de la red simplificando el intercambio."},{"q":"En la programación de sockets, ¿qué método vincula el socket a una dirección IP y puerto local?","options":["connect().","accept().","bind().","listen()."],"correct":2,"justification":"El método bind() realiza el enlazamiento del socket a una dirección y puerto determinados."},{"q":"¿Qué función de ServerSocket bloquea la ejecución esperando una petición de conexión entrante?","options":["bind().","accept().","read().","close()."],"correct":1,"justification":"El método accept() detiene al servidor hasta que recibe y acepta la conexión de un cliente."},{"q":"¿Qué protocolo permite asignar dinámicamente direcciones IP a los clientes de una red?","options":["DNS.","DHCP.","SMTP.","NFS."],"correct":1,"justification":"El servidor configurado con DHCP asigna IPs de forma automática a los dispositivos que se conectan."},{"q":"¿Qué mensaje inicia el 'Three-way handshake' en una conexión TCP?","options":["ACK.","FIN.","SYN.","SYN-ACK."],"correct":2,"justification":"El cliente solicita la conexión enviando el mensaje de sincronización SYN."},{"q":"¿En qué nivel del modelo TCP/IP se realiza la división del mensaje en paquetes?","options":["Nivel de aplicación.","Nivel de transporte.","Nivel de Internet.","Nivel de red."],"correct":1,"justification":"El nivel de transporte es el encargado de segmentar la información en paquetes para el envío."},{"q":"¿Qué identifica de forma completa y única una conexión TCP?","options":["Solo la IP del servidor.","El protocolo HTTP.","IP origen, IP destino y los puertos de ambos.","El nombre del host cliente."],"correct":2,"justification":"Un socket TCP se define por el conjunto (IP, puerto) de ambos extremos."},{"q":"¿Cuál es el inconveniente principal de UDP frente a TCP?","options":["Es mucho más lento en transferencia.","Requiere una conexión previa muy pesada.","No garantiza la entrega de los mensajes.","No permite enviar paquetes de datos."],"correct":2,"justification":"UDP es un protocolo no fiable porque no realiza acuse de recibo ni ordenamiento."},{"q":"¿Qué clase de Java permite al servidor aceptar específicamente conexiones TCP entrantes?","options":["ServerSocket.","URL.","DatagramPacket.","HttpURLConnection."],"correct":0,"justification":"ServerSocket es la clase que escucha en un puerto peticiones de clientes TCP."},{"q":"En el modelo cliente-servidor, ¿qué rol es el encargado de iniciar normalmente la comunicación?","options":["El servidor.","El cliente.","El router.","El firewall."],"correct":1,"justification":"Los clientes realizan las peticiones iniciales y los servidores responden."},{"q":"¿Qué técnica se utiliza para dividir un mensaje en paquetes en el nivel de transporte del modelo TCP/IP?","options":["Encapsulación.","Fragmentación en paquetes.","Handshake.","Invocación remota."],"correct":1,"justification":"La fragmentación o segmentación ocurre en el nivel de transporte para dividir el mensaje en unidades manejables."},{"q":"Según el protocolo TCP, ¿cuál es la secuencia correcta de mensajes para cerrar una conexión (Handshake de fin)?","options":["El cliente envía FIN y la conexión se corta inmediatamente.","Secuencia de 4 pasos: FIN (Cliente) -> ACK (Servidor) -> FIN (Servidor) -> ACK (Cliente).","El servidor envía RST al cliente para finalizar.","El cliente envía un paquete STOP y espera confirmación."],"correct":1,"justification":"El cierre ordenado requiere que ambos extremos confirmen el fin: primero uno envía FIN y recibe ACK, luego el otro envía su FIN y recibe su ACK."},{"q":"¿Qué protocolo de la capa de aplicación es el estándar utilizado para el envío y transferencia de correo electrónico?","options":["POP3.","IMAP.","SMTP.","HTTP."],"correct":2,"justification":"SMTP (Simple Mail Transfer Protocol) es el protocolo diseñado para el intercambio y envío de correos, mientras que POP3/IMAP son para la recepción."},{"q":"¿Qué elementos identifican de forma COMPLETA y única una conexión de socket establecida entre dos máquinas?","options":["Solo la IP y puerto del servidor.","La IP de origen y la IP de destino únicamente.","Protocolo, IP origen, Puerto origen, IP destino y Puerto destino.","El nombre de dominio y la dirección MAC."],"correct":2,"justification":"Aunque un socket local es IP:Puerto, la conexión completa (el túnel) se identifica por los 5 valores: Protocolo + IP/Puerto de ambos extremos."},{"q":"RA3 - ¿Qué rol inicia normalmente la comunicación en red?","options":["Router","Servidor","Cliente","Firewall"],"correct":2,"justification":"El cliente es quien solicita el inicio de la conexión hacia el servidor."},{"q":"RA3 - ¿Qué clase Java permite aceptar conexiones entrantes?","options":["DatagramSocket","URL","ServerSocket","Socket"],"correct":2,"justification":"ServerSocket se utiliza en el lado servidor para esperar y aceptar peticiones."},{"q":"RA3 - ¿Qué es un socket?","options":["Una dirección IP","Un mecanismo de comunicación entre aplicaciones en red","Un servicio del sistema","Un protocolo de transporte"],"correct":1,"justification":"Punto final de una conexión que permite a las aplicaciones intercambiar datos."},{"q":"¿Qué información define un socket de forma única?","options":["La dirección MAC y la dirección IP.","La dirección IP, el protocolo y el puerto.","El nombre del host y el protocolo.","Únicamente el puerto de comunicación."],"correct":1,"justification":"Un socket se define mediante la dirección IP de los dos dispositivos, el protocolo de transporte y el puerto."},{"q":"¿Cuál es la función principal del método accept() de la clase ServerSocket?","options":["Conectar el cliente al servidor enviando una petición.","Bloquear la ejecución del servidor hasta que un cliente solicita una conexión.","Enviar datos al cliente conectado.","Cerrar el puerto para que nadie más se conecte."],"correct":1,"justification":"accept() espera (bloquea) hasta que llega una petición y devuelve un socket para comunicarse."},{"q":"¿Qué protocolo de transporte elegirías para una aplicación de videoconferencia en tiempo real donde la velocidad es prioritaria sobre la pérdida de algún paquete?","options":["TCP.","HTTP.","UDP.","FTP."],"correct":2,"justification":"UDP es no orientado a conexión y más rápido, ideal cuando el tiempo es crítico y se tolera pérdida de datos."},{"q":"En una comunicación TCP, ¿qué flujos se utilizan para enviar y recibir datos a través del objeto Socket?","options":["DatagramPacket y DatagramSocket.","InputStream y OutputStream.","Reader y Writer.","InputPacket y OutputPacket."],"correct":1,"justification":"En TCP (clase Socket), la comunicación se realiza mediante flujos de entrada (InputStream) y salida (OutputStream)."},{"q":"¿Qué método se utiliza en la clase DatagramSocket para mandar un paquete UDP?","options":["write().","send().","push().","transmit()."],"correct":1,"justification":"En UDP (DatagramSocket), se usa send() para enviar."},{"q":"¿Cuál de las siguientes afirmaciones sobre DatagramPacket es correcta?","options":["Solo se utiliza en el servidor.","Es la clase que establece la conexión en UDP.","Representa el contenedor de datos (el paquete) que se envía o recibe en UDP.","Garantiza que el paquete llegue a su destino."],"correct":2,"justification":"DatagramPacket es la clase que permite crear paquetes (datos + dirección) para enviarlos por UDP."},{"q":"¿Qué clase usarías para obtener la dirección IP de tu propia máquina local mediante código Java?","options":["Socket.","InetAddress.","URL.","LocalHost."],"correct":1,"justification":"La clase InetAddress tiene el método getLocalHost() para esto."},{"q":"¿Qué protocolo se utiliza principalmente para el ENVÍO de correo electrónico desde un cliente a un servidor?","options":["POP3.","IMAP.","SMTP.","SNMP."],"correct":2,"justification":"SMTP se usa para envío. POP e IMAP son para recepción."},{"q":"¿Qué protocolo de capa de aplicación asigna dinámicamente direcciones IP a los clientes que se conectan a la red?","options":["DNS.","HTTP.","DHCP.","FTP."],"correct":2,"justification":"DHCP es el encargado de la asignación dinámica de IPs."},{"q":"¿Cuál es el protocolo estándar a nivel de aplicación utilizado para la transferencia/envío de correo electrónico entre servidores?","options":["POP3","IMAP","SMTP","SNMP"],"correct":2,"justification":"Mnemotecnia: SMTP (Send Mail / Salida). POP3 e IMAP son protocolos de recepción/lectura para el usuario final."}],"servicios":[{"q":"¿Qué técnica es conceptualmente parecida a RMI pero basada en programación estructurada?","options":["SOAP.","RPC (Remote Procedure Call).","REST.","TCP."],"correct":1,"justification":"El RPC es la variante estructurada para invocar procedimientos remotos, similar al RMI orientado a objetos."},{"q":"¿Qué herramienta distribuye las peticiones masivas entre servidores para evitar colapsos?","options":["Servidor dedicado.","Balanceadores de carga.","Réplicas de servidores.","Monitorización."],"correct":1,"justification":"Los balanceadores distribuyen la carga de tráfico masivo para optimizar rendimiento."},{"q":"¿Cómo se denomina al equipo informático que es único para una empresa y no se comparte?","options":["Servidor compartido.","Servidor espejo.","Servidor dedicado.","Servidor concurrente."],"correct":2,"justification":"Un servidor dedicado es aquel recurso único para una organización."},{"q":"¿Qué lenguaje utiliza obligatoriamente el protocolo SOAP para sus mensajes?","options":["JSON.","HTML.","XML.","Texto plano."],"correct":2,"justification":"SOAP define la comunicación de objetos mediante el lenguaje XML."},{"q":"¿Qué librería externa de Java se usa habitualmente para clientes FTP?","options":["Java Standard API.","Apache Commons Net.","Google Guava.","RMI Registry."],"correct":1,"justification":"Esta librería proporciona clases como FTPClient para la gestión de transferencias."},{"q":"¿Qué clase de Java representa una dirección IP?","options":["URL.","InetAddress.","Socket.","ServerSocket."],"correct":1,"justification":"InetAddress es la clase específica del API de Java para representar IPs."},{"q":"Según el solucionario del libro, ¿qué ventaja principal ofrece REST frente a SOAP en comunicaciones simultáneas?","options":["REST utiliza un cifrado más potente que SOAP.","Los mensajes enviados definen todo lo necesario para procesarse, por lo que el servidor no necesita almacenar el estado (Stateless).","REST permite el uso de protocolos de transporte distintos a HTTP.","SOAP no permite el envío de datos binarios."],"correct":1,"justification":"Los mensajes definen todo lo necesario... por lo que ni cliente ni servidor deben almacenar el estado."},{"q":"RA4 - ¿Qué tecnología permite invocar métodos remotos en Java?","options":["RMI","FTP","DNS","HTTP"],"correct":0,"justification":"RMI (Remote Method Invocation) permite llamar a métodos de objetos en otras máquinas virtuales."},{"q":"¿Cuál es la principal ventaja de la arquitectura REST frente a SOAP?","options":["REST utiliza XML obligatoriamente, lo que lo hace más seguro.","REST es 'Stateless' (sin estado), por lo que el servidor no necesita almacenar datos de la sesión del cliente, haciendo los mensajes auto-contenidos.","REST solo funciona en redes locales.","REST requiere autenticación biométrica."],"correct":1,"justification":"REST no obliga a guardar estado; el mensaje lleva toda la info necesaria."},{"q":"¿Qué clase de Java se utiliza para representar la información de un archivo alojado en un servidor FTP (nombre, tamaño, tipo)?","options":["File.","FTPFile.","FTPData.","RemoteFile."],"correct":1,"justification":"La clase es FTPFile (con métodos getName, getSize, etc.)."},{"q":"¿Qué tecnología de comunicación Java permite invocar métodos de objetos situados en una máquina remota?","options":["RPC (Remote Procedure Call).","RMI (Remote Method Invocation).","NFS (Network File System).","DHCP (Dynamic Host Configuration Protocol)."],"correct":1,"justification":"RMI (Remote Method Invocation) es la tecnología propia de Java para objetos remotos."},{"q":"¿Qué método de la clase SMTPClient se utiliza para verificar que una dirección de correo es válida?","options":["verify().","checkEmail().","validate().","login()."],"correct":0,"justification":"El método es verify(String username)."},{"q":"¿Cuál es la diferencia fundamental entre RMI y RPC?","options":["RMI es para C++ y RPC para Java.","RMI se basa en programación orientada a objetos y RPC en programación estructurada.","RMI es más lento que RPC.","RPC usa XML y RMI usa JSON."],"correct":1,"justification":"RMI es para objetos (Java) y RPC para procedimientos (estructurada)."}]};
+
+// ═══════════════════════════════════════════════════════
+//  BLOCK CONFIG
+// ═══════════════════════════════════════════════════════
+const BLOCKS = [
+  { id: 'procesos', name: 'Procesos y SO', icon: '⚙️', color: '#6c8aff', cls: 'b1', desc: 'Procesos, Bernstein, planificación, servicios' },
+  { id: 'hilos',    name: 'Hilos y Multihilo', icon: '🧵', color: '#a78bfa', cls: 'b2', desc: 'Thread, ciclo de vida, sincronización, deadlock' },
+  { id: 'seguridad',name: 'Seguridad y Criptografía', icon: '🔐', color: '#fbbf24', cls: 'b3', desc: 'AES, RSA, autenticación, programación segura' },
+  { id: 'red',      name: 'Red y Sockets', icon: '🌐', color: '#34d399', cls: 'b4', desc: 'TCP/UDP, sockets, protocolos, puertos' },
+  { id: 'servicios',name: 'Servicios Web', icon: '☁️', color: '#f87171', cls: 'b5', desc: 'REST, SOAP, RMI, RPC, balanceadores' },
+];
+
+// ═══════════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════════
+let state = {
+  failBank: [],       // {q, options, correct, justification, blockId, failCount}
+  progress: {},       // blockId -> {correct, wrong, done}
+};
+
+let session = {
+  questions: [],
+  idx: 0,
+  correct: 0,
+  wrong: 0,
+  fails: [],          // questions failed this session
+  blockId: null,
+  isBank: false,
+  answered: false,
+};
+
+// ═══════════════════════════════════════════════════════
+//  STORAGE
+// ═══════════════════════════════════════════════════════
+function save() {
+  try { localStorage.setItem('psp_state', JSON.stringify(state)); } catch(e) {}
+}
+
+function load() {
+  try {
+    const d = localStorage.getItem('psp_state');
+    if (d) state = JSON.parse(d);
+  } catch(e) {}
+}
+
+// ═══════════════════════════════════════════════════════
+//  SHUFFLE
+// ═══════════════════════════════════════════════════════
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// ═══════════════════════════════════════════════════════
+//  SCREEN NAV
+// ═══════════════════════════════════════════════════════
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function goHome() {
+  updateHomeStats();
+  show('home');
+}
+
+// ═══════════════════════════════════════════════════════
+//  HOME
+// ═══════════════════════════════════════════════════════
+function buildHome() {
+  const grid = document.getElementById('blocks-grid');
+  grid.innerHTML = '';
+
+  BLOCKS.forEach(b => {
+    const qs = QUESTIONS_DB[b.id] || [];
+    const prog = state.progress[b.id] || {};
+    const done = prog.done || 0;
+    const total = qs.length;
+    const pct = total ? Math.round(done / total * 100) : 0;
+
+    const btn = document.createElement('button');
+    btn.className = `block-btn ${b.cls}${done > 0 ? ' has-progress' : ''}`;
+    btn.onclick = () => startBlock(b.id);
+    btn.innerHTML = `
+      <div class="block-icon">${b.icon}</div>
+      <div class="block-info">
+        <div class="block-name">${b.name}</div>
+        <div class="block-meta">${b.desc}</div>
+        ${done > 0 ? `<div class="progress-mini"><div class="progress-mini-fill" style="width:${pct}%;background:${b.color}"></div></div>` : ''}
+      </div>
+      <div class="block-count">${total}</div>
+    `;
+    grid.appendChild(btn);
+  });
+}
+
+function updateHomeStats() {
+  const bankCount = state.failBank.length;
+  document.getElementById('stat-bank').textContent = bankCount;
+  document.getElementById('bank-count').textContent = bankCount;
+  document.getElementById('bank-meta').textContent = bankCount > 0
+    ? `${bankCount} pregunta${bankCount !== 1 ? 's' : ''} pendiente${bankCount !== 1 ? 's' : ''}`
+    : 'Sin fallos acumulados ✓';
+
+  let totalDone = 0;
+  let totalAll = 0;
+  BLOCKS.forEach(b => {
+    const qs = QUESTIONS_DB[b.id] || [];
+    totalAll += qs.length;
+    totalDone += (state.progress[b.id] || {}).done || 0;
+  });
+  const pct = totalAll ? Math.round(totalDone / totalAll * 100) : 0;
+  document.getElementById('stat-done').textContent = pct + '%';
+}
+
+// ═══════════════════════════════════════════════════════
+//  START BLOCK
+// ═══════════════════════════════════════════════════════
+function startBlock(blockId) {
+  const block = BLOCKS.find(b => b.id === blockId);
+  const qs = shuffle([...(QUESTIONS_DB[blockId] || [])]);
+
+  session = {
+    questions: qs,
+    idx: 0,
+    correct: 0,
+    wrong: 0,
+    fails: [],
+    blockId,
+    isBank: false,
+    answered: false,
+  };
+
+  document.getElementById('quiz-block-name').textContent = block.name;
+  document.getElementById('quiz-block-sub').textContent = block.icon + ' ' + block.desc;
+
+  show('quiz');
+  renderQuestion();
+}
+
+function startBank() {
+  if (state.failBank.length === 0) {
+    toast('El banco de fallos está vacío 🎉');
+    return;
+  }
+  const qs = shuffle([...state.failBank]);
+  session = {
+    questions: qs,
+    idx: 0,
+    correct: 0,
+    wrong: 0,
+    fails: [],
+    blockId: 'bank',
+    isBank: true,
+    answered: false,
+  };
+  document.getElementById('quiz-block-name').textContent = '🔥 Banco de Fallos';
+  document.getElementById('quiz-block-sub').textContent = `${qs.length} preguntas falladas`;
+  show('quiz');
+  renderQuestion();
+}
+
+function retryFails() {
+  if (session.fails.length === 0) { goHome(); return; }
+  const blockId = session.blockId;
+  const isBank = session.isBank;
+  const qs = shuffle([...session.fails]);
+  session = {
+    questions: qs,
+    idx: 0,
+    correct: 0,
+    wrong: 0,
+    fails: [],
+    blockId,
+    isBank,
+    answered: false,
+  };
+  const block = BLOCKS.find(b => b.id === blockId);
+  if (block) {
+    document.getElementById('quiz-block-name').textContent = block.name + ' — Fallos';
+    document.getElementById('quiz-block-sub').textContent = `Repasando ${qs.length} pregunta${qs.length !== 1 ? 's' : ''} fallada${qs.length !== 1 ? 's' : ''}`;
+  }
+  show('quiz');
+  renderQuestion();
+}
+
+function retryAll() {
+  startBlock(session.blockId);
+}
+
+// ═══════════════════════════════════════════════════════
+//  RENDER QUESTION
+// ═══════════════════════════════════════════════════════
+function renderQuestion() {
+  session.answered = false;
+  const q = session.questions[session.idx];
+  const total = session.questions.length;
+  const idx = session.idx;
+
+  document.getElementById('q-num').textContent = `PREGUNTA ${idx + 1} / ${total}`;
+  document.getElementById('q-text').textContent = q.q;
+  document.getElementById('progress-fill').style.width = ((idx / total) * 100) + '%';
+  document.getElementById('chip-ok').textContent = '✓ ' + session.correct;
+  document.getElementById('chip-err').textContent = '✗ ' + session.wrong;
+
+  const list = document.getElementById('options-list');
+  list.innerHTML = '';
+  const letters = ['A', 'B', 'C', 'D'];
+
+  q.options.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.innerHTML = `<span class="opt-letter">${letters[i]}</span><span>${opt}</span>`;
+    btn.onclick = () => selectAnswer(i, btn);
+    list.appendChild(btn);
+  });
+
+  document.getElementById('feedback-box').className = 'feedback-box';
+  document.getElementById('ai-actions').style.display = 'none';
+  document.getElementById('ai-loading').className = 'ai-loading';
+  document.getElementById('ai-result').className = 'ai-result';
+  document.getElementById('next-wrap').className = 'next-wrap';
+  document.getElementById('next-btn').textContent = idx + 1 < total ? 'Siguiente →' : 'Ver resultado';
+
+  // scroll top
+  document.getElementById('quiz-body').scrollTop = 0;
+}
+
+// ═══════════════════════════════════════════════════════
+//  ANSWER
+// ═══════════════════════════════════════════════════════
+function selectAnswer(idx, btn) {
+  if (session.answered) return;
+  session.answered = true;
+
+  const q = session.questions[session.idx];
+  const isCorrect = idx === q.correct;
+  const allBtns = document.querySelectorAll('.opt-btn');
+
+  allBtns.forEach((b, i) => {
+    b.disabled = true;
+    if (i === q.correct) {
+      b.classList.add('correct');
+    } else if (i === idx && !isCorrect) {
+      b.classList.add('wrong');
+    } else {
+      b.classList.add('dimmed');
+    }
+  });
+
+  if (isCorrect) {
+    session.correct++;
+    showFeedback(true, q.justification);
+    // Remove from fail bank if answered correctly
+    removeFromBank(q);
+  } else {
+    session.wrong++;
+    showFeedback(false, q.justification);
+    session.fails.push(q);
+    addToBank(q);
+  }
+
+  document.getElementById('chip-ok').textContent = '✓ ' + session.correct;
+  document.getElementById('chip-err').textContent = '✗ ' + session.wrong;
+  document.getElementById('next-wrap').classList.add('show');
+  document.getElementById('ai-actions').style.display = 'flex';
+
+  // scroll to feedback
+  setTimeout(() => {
+    const fb = document.getElementById('feedback-box');
+    fb.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }, 150);
+}
+
+function showFeedback(isCorrect, text) {
+  const box = document.getElementById('feedback-box');
+  const header = document.getElementById('fb-header');
+  const fbText = document.getElementById('fb-text');
+
+  box.className = 'feedback-box show ' + (isCorrect ? 'correct-fb' : 'wrong-fb');
+  header.className = 'fb-header ' + (isCorrect ? 'correct-fb' : 'wrong-fb');
+  header.textContent = isCorrect ? '✓ Correcto' : '✗ Incorrecto — Respuesta correcta:';
+  fbText.textContent = text;
+}
+
+// ═══════════════════════════════════════════════════════
+//  NEXT
+// ═══════════════════════════════════════════════════════
+function nextQuestion() {
+  session.idx++;
+  if (session.idx < session.questions.length) {
+    renderQuestion();
+  } else {
+    showResults();
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+//  RESULTS
+// ═══════════════════════════════════════════════════════
+function showResults() {
+  const total = session.questions.length;
+  const correct = session.correct;
+  const wrong = session.wrong;
+  const pct = Math.round((correct / total) * 100);
+
+  // Update progress
+  if (!session.isBank) {
+    if (!state.progress[session.blockId]) state.progress[session.blockId] = {};
+    const prev = state.progress[session.blockId];
+    prev.done = Math.max(prev.done || 0, total);
+    prev.correct = (prev.correct || 0) + correct;
+    prev.wrong = (prev.wrong || 0) + wrong;
+    save();
+  }
+
+  document.getElementById('res-icon').textContent = pct >= 80 ? '🏆' : pct >= 60 ? '👍' : '📚';
+  document.getElementById('res-score').textContent = `${correct}/${total}`;
+  document.getElementById('res-label').textContent = pct >= 80 ? '¡Excelente!' : pct >= 60 ? 'Bien, sigue así' : 'Necesitas repasar';
+  document.getElementById('res-correct').textContent = correct;
+  document.getElementById('res-wrong').textContent = wrong;
+  document.getElementById('res-pct').textContent = pct + '%';
+  document.getElementById('res-bank').textContent = state.failBank.length;
+
+  const retryBtn = document.getElementById('retry-fails-btn');
+  if (session.fails.length > 0) {
+    retryBtn.style.display = '';
+    retryBtn.textContent = `🔥 Repasar ${session.fails.length} fallo${session.fails.length !== 1 ? 's' : ''} de este bloque`;
+  } else {
+    retryBtn.style.display = 'none';
+  }
+
+  document.getElementById('retry-all-btn').style.display = session.isBank ? 'none' : '';
+
+  updateHomeStats();
+  show('results');
+}
+
+// ═══════════════════════════════════════════════════════
+//  FAIL BANK
+// ═══════════════════════════════════════════════════════
+function addToBank(q) {
+  const exists = state.failBank.find(f => f.q === q.q);
+  if (exists) {
+    exists.failCount = (exists.failCount || 1) + 1;
+  } else {
+    state.failBank.push({ ...q, failCount: 1 });
+  }
+  save();
+}
+
+function removeFromBank(q) {
+  state.failBank = state.failBank.filter(f => f.q !== q.q);
+  save();
+}
+
+// ═══════════════════════════════════════════════════════
+//  BANK SCREEN
+// ═══════════════════════════════════════════════════════
+function showBankScreen() {
+  const list = document.getElementById('bank-list');
+  document.getElementById('bank-sub').textContent = `${state.failBank.length} preguntas acumuladas`;
+
+  if (state.failBank.length === 0) {
+    list.innerHTML = '<div class="empty-state"><div class="empty-icon">✓</div><div>Sin fallos acumulados.<br>¡Buen trabajo!</div></div>';
+  } else {
+    list.innerHTML = '';
+    state.failBank.forEach((q, i) => {
+      const item = document.createElement('div');
+      item.className = 'bank-item';
+      const block = BLOCKS.find(b => b.id === q.blockId) || { icon: '❓', name: 'Desconocido' };
+      item.innerHTML = `
+        <div class="bank-item-q">${q.q}</div>
+        <div class="bank-item-meta">
+          <span class="fail-dot"></span>
+          Fallada ${q.failCount || 1} vez${(q.failCount || 1) !== 1 ? 'es' : ''}
+          &nbsp;·&nbsp; ${block.icon} ${block.name}
+        </div>
+      `;
+      list.appendChild(item);
+    });
+  }
+  show('bank');
+}
+
+// ═══════════════════════════════════════════════════════
+//  AI — SIMILAR / HARDER
+// ═══════════════════════════════════════════════════════
+let aiController = null;
+
+function getApiKey() {
+  let key = localStorage.getItem('psp_apikey') || '';
+  if (!key) {
+    key = prompt('Introduce tu API key de Anthropic para usar la IA.\n(Se guarda solo en tu dispositivo, nunca se envía a ningún servidor excepto a api.anthropic.com)\n\nObtén una gratis en: console.anthropic.com');
+    if (key && key.trim().startsWith('sk-')) {
+      localStorage.setItem('psp_apikey', key.trim());
+    } else if (key !== null) {
+      alert('La API key debe empezar por sk-\nIntrodúcela de nuevo la próxima vez.');
+      return null;
+    } else {
+      return null;
+    }
+  }
+  return key.trim();
+}
+
+function clearApiKey() {
+  localStorage.removeItem('psp_apikey');
+  toast('API key eliminada');
+}
+
+async function callAI(prompt) {
+  const apiKey = getApiKey();
+  if (!apiKey) return;
+
+  document.getElementById('ai-loading').classList.add('show');
+  document.getElementById('ai-result').className = 'ai-result';
+
+  if (aiController) aiController.abort();
+  aiController = new AbortController();
+
+  const reqBody = JSON.stringify({
+    model: 'claude-haiku-4-5-20251001',
+    max_tokens: 600,
+    messages: [{ role: 'user', content: prompt }]
+  });
+  const reqHeaders = {
+    'Content-Type': 'application/json',
+    'x-api-key': apiKey,
+    'anthropic-version': '2023-06-01',
+    'anthropic-dangerous-allow-browser': 'true'
+  };
+  try {
+    let resp;
+    try {
+      resp = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST', headers: reqHeaders, body: reqBody, signal: aiController.signal
+      });
+    } catch(corsErr) {
+      const proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent('https://api.anthropic.com/v1/messages');
+      resp = await fetch(proxyUrl, {
+        method: 'POST', headers: reqHeaders, body: reqBody, signal: aiController.signal
+      });
+    }
+    document.getElementById('ai-loading').classList.remove('show');
+
+    if (!resp.ok) {
+      const err = await resp.json().catch(() => ({}));
+      if (resp.status === 401) {
+        localStorage.removeItem('psp_apikey');
+        document.getElementById('ai-result-content').textContent = 'API key incorrecta o expirada. Pulsa el botón de nuevo para introducir una nueva.';
+      } else {
+        document.getElementById('ai-result-content').textContent = `Error ${resp.status}: ${err.error?.message || 'Error desconocido'}`;
+      }
+      document.getElementById('ai-result').classList.add('show');
+      return;
+    }
+
+    const data = await resp.json();
+    const text = data.content?.map(c => c.text || '').join('') || 'Sin respuesta';
+
+    document.getElementById('ai-result-content').textContent = text;
+    document.getElementById('ai-result').classList.add('show');
+
+    setTimeout(() => {
+      document.getElementById('ai-result').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }, 100);
+
+  } catch (e) {
+    document.getElementById('ai-loading').classList.remove('show');
+    if (e.name !== 'AbortError') {
+      document.getElementById('ai-result-content').textContent = 'Error de red. Comprueba tu conexión a internet.';
+      document.getElementById('ai-result').classList.add('show');
+    }
+  }
+}
+
+function aiSimilar() {
+  const q = session.questions[session.idx];
+  callAI(`Eres un profesor de Programación de Servicios y Procesos (DAM/DAW). 
+Genera UNA pregunta tipo test (4 opciones A/B/C/D) similar a esta pero con distinto enunciado, sobre el mismo concepto:
+
+PREGUNTA ORIGINAL: ${q.q}
+OPCIONES: ${q.options.join(' | ')}
+RESPUESTA CORRECTA: ${q.options[q.correct]}
+
+La nueva pregunta debe:
+- Tener opciones muy parecidas entre sí (que hagan dudar, como en el examen real)
+- Incluir al final: RESPUESTA CORRECTA: [letra] — [explicación breve]
+- Estar en español
+- Ser concisa
+
+Solo devuelve la pregunta, las 4 opciones y la respuesta. Sin introducción.`);
+}
+
+function aiHarder() {
+  const q = session.questions[session.idx];
+  callAI(`Eres un profesor de Programación de Servicios y Procesos (DAM/DAW). 
+Genera UNA pregunta tipo test (4 opciones A/B/C/D) MÁS DIFÍCIL sobre el mismo concepto que esta:
+
+PREGUNTA ORIGINAL: ${q.q}
+CONCEPTO: ${q.justification}
+
+La nueva pregunta debe:
+- Ser más retorcida, con casos concretos o código Java
+- Tener opciones muy similares entre sí (difíciles de distinguir)
+- Incluir alguna trampa conceptual típica de examen
+- Incluir al final: RESPUESTA CORRECTA: [letra] — [explicación breve]
+- Estar en español
+
+Solo devuelve la pregunta, las 4 opciones y la respuesta. Sin introducción.`);
+}
+
+// ═══════════════════════════════════════════════════════
+//  TOAST
+// ═══════════════════════════════════════════════════════
+let toastTimer;
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ═══════════════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════════════
+load();
+buildHome();
+updateHomeStats();
+</script>
+</body>
+</html>
