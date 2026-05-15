@@ -1153,10 +1153,10 @@ function getApiKey() {
   let key = localStorage.getItem('psp_apikey') || '';
   if (!key) {
     key = prompt('Introduce tu API key de Anthropic para usar la IA.\n(Se guarda solo en tu dispositivo, nunca se envía a ningún servidor excepto a api.anthropic.com)\n\nObtén una gratis en: console.anthropic.com');
-    if (key && key.trim().startsWith('sk-')) {
+    if (key && key.trim().length > 10) {
       localStorage.setItem('psp_apikey', key.trim());
-    } else if (key !== null) {
-      alert('La API key debe empezar por sk-\nIntrodúcela de nuevo la próxima vez.');
+    } else if (key !== null && key.trim().length > 0) {
+      alert('La API key parece incorrecta. Cópiala completa desde console.anthropic.com');
       return null;
     } else {
       return null;
