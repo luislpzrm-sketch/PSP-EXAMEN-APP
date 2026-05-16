@@ -1194,9 +1194,8 @@ async function callAI(prompt) {
 
   // Try each endpoint in order
   const endpoints = [
+    'https://psp-proxy.luis-lpzrm.workers.dev',
     'https://api.anthropic.com/v1/messages',
-    'https://proxy.cors.sh/https://api.anthropic.com/v1/messages',
-    'https://cors-anywhere.herokuapp.com/https://api.anthropic.com/v1/messages',
   ];
 
   for (const url of endpoints) {
@@ -1207,8 +1206,6 @@ async function callAI(prompt) {
         'anthropic-version': '2023-06-01',
         'anthropic-dangerous-allow-browser': 'true',
       };
-      // cors.sh needs its own key header
-      if (url.includes('cors.sh')) headers['x-cors-api-key'] = 'temp_' + Date.now();
 
       const resp = await fetch(url, {
         method: 'POST', headers, body: reqBody, signal: aiController.signal
