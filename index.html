@@ -1170,6 +1170,25 @@ function clearApiKey() {
   toast('API key eliminada');
 }
 
+
+function formatAI(text) {
+  // Remove code fences and format nicely
+  text = text.replace(/```[a-z]*\n?/g, '').replace(/```/g, '');
+  // Bold **text**
+  text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+  // Convert A) B) C) D) options to styled lines
+  text = text.replace(/([A-D])\)/g, '<br><span style="display:inline-block;min-width:22px;font-weight:700;color:#a78bfa">$1)</span>');
+  // RESPUESTA CORRECTA line
+  text = text.replace(/(RESPUESTA CORRECTA:?)/g, '<br><span style="color:#34d399;font-weight:700">✓ $1</span>');
+  // PREGUNTA: line
+  text = text.replace(/(PREGUNTA:?)/g, '<span style="color:#6c8aff;font-weight:700;font-size:11px;letter-spacing:1px">$1</span>');
+  // Line breaks
+  text = text.replace(/\n\n/g, '<br><br>').replace(/\n/g, '<br>');
+  // Clean up multiple <br>
+  text = text.replace(/(<br>){3,}/g, '<br><br>');
+  return text.trim();
+}
+
 async function callAI(prompt) {
   const apiKey = getApiKey();
   if (!apiKey) return;
@@ -1228,7 +1247,7 @@ async function callAI(prompt) {
 
       const data = await resp.json();
       const text = data.content?.map(c => c.text || '').join('') || 'Sin respuesta';
-      document.getElementById('ai-result-content').textContent = text;
+      document.getElementById('ai-result-content').innerHTML = formatAI(text);
       document.getElementById('ai-result').classList.add('show');
       setTimeout(() => {
         document.getElementById('ai-result').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
