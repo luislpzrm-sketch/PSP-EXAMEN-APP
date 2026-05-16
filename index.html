@@ -1185,55 +1185,68 @@ async function callAI(prompt) {
     max_tokens: 600,
     messages: [{ role: 'user', content: prompt }]
   });
-  const reqHeaders = {
-    'Content-Type': 'application/json',
-    'x-api-key': apiKey,
-    'anthropic-version': '2023-06-01',
-    'anthropic-dangerous-allow-browser': 'true'
-  };
-  try {
-    let resp;
-    try {
-      resp = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST', headers: reqHeaders, body: reqBody, signal: aiController.signal
-      });
-    } catch(corsErr) {
-      const proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent('https://api.anthropic.com/v1/messages');
-      resp = await fetch(proxyUrl, {
-        method: 'POST', headers: reqHeaders, body: reqBody, signal: aiController.signal
-      });
-    }
-    document.getElementById('ai-loading').classList.remove('show');
 
-    if (!resp.ok) {
-      const err = await resp.json().catch(() => ({}));
+  function showError(msg) {
+    document.getElementById('ai-loading').classList.remove('show');
+    document.getElementById('ai-result-content').textContent = msg;
+    document.getElementById('ai-result').classList.add('show');
+  }
+
+  // Try each endpoint in order
+  const endpoints = [
+    'https://api.anthropic.com/v1/messages',
+    'https://proxy.cors.sh/https://api.anthropic.com/v1/messages',
+    'https://cors-anywhere.herokuapp.com/https://api.anthropic.com/v1/messages',
+  ];
+
+  for (const url of endpoints) {
+    try {
+      const headers = {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-allow-browser': 'true',
+      };
+      // cors.sh needs its own key header
+      if (url.includes('cors.sh')) headers['x-cors-api-key'] = 'temp_' + Date.now();
+
+      const resp = await fetch(url, {
+        method: 'POST', headers, body: reqBody, signal: aiController.signal
+      });
+
+      document.getElementById('ai-loading').classList.remove('show');
+
       if (resp.status === 401) {
         localStorage.removeItem('psp_apikey');
-        document.getElementById('ai-result-content').textContent = 'API key incorrecta o expirada. Pulsa el botón de nuevo para introducir una nueva.';
-      } else {
-        document.getElementById('ai-result-content').textContent = `Error ${resp.status}: ${err.error?.message || 'Error desconocido'}`;
+        showError('API key incorrecta. Pulsa de nuevo e introduce la key completa desde console.anthropic.com → Claves de API.');
+        return;
       }
+      if (resp.status === 403 || resp.status === 0) continue; // try next proxy
+
+      if (!resp.ok) {
+        const err = await resp.json().catch(() => ({}));
+        showError('Error ' + resp.status + ': ' + (err.error?.message || JSON.stringify(err)));
+        return;
+      }
+
+      const data = await resp.json();
+      const text = data.content?.map(c => c.text || '').join('') || 'Sin respuesta';
+      document.getElementById('ai-result-content').textContent = text;
       document.getElementById('ai-result').classList.add('show');
-      return;
-    }
+      setTimeout(() => {
+        document.getElementById('ai-result').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }, 100);
+      return; // success
 
-    const data = await resp.json();
-    const text = data.content?.map(c => c.text || '').join('') || 'Sin respuesta';
-
-    document.getElementById('ai-result-content').textContent = text;
-    document.getElementById('ai-result').classList.add('show');
-
-    setTimeout(() => {
-      document.getElementById('ai-result').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }, 100);
-
-  } catch (e) {
-    document.getElementById('ai-loading').classList.remove('show');
-    if (e.name !== 'AbortError') {
-      document.getElementById('ai-result-content').textContent = 'Error de red. Comprueba tu conexión a internet.';
-      document.getElementById('ai-result').classList.add('show');
+    } catch (e) {
+      if (e.name === 'AbortError') return;
+      // CORS blocked or network error — try next endpoint
+      continue;
     }
   }
+
+  // All endpoints failed
+  showError('No se pudo conectar con la IA desde este navegador. Prueba en Safari del iPhone con la URL de GitHub.');
 }
 
 function aiSimilar() {
