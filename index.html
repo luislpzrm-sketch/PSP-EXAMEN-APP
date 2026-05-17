@@ -698,6 +698,10 @@
   </div>
 
   <div class="next-wrap" id="next-wrap">
+    <div id="bank-choice" style="display:none;gap:10px;flex-direction:column">
+      <button class="next-btn" style="background:linear-gradient(135deg,#34d399,#059669)" onclick="bankCorrectLeave()">✓ Ya la sé — quitar del banco</button>
+      <button class="next-btn" style="background:var(--surface2);border:1.5px solid var(--border);color:var(--muted)" onclick="bankCorrectKeep()">Seguir repasando — dejar en el banco</button>
+    </div>
     <button class="next-btn" id="next-btn" onclick="nextQuestion()">Siguiente →</button>
   </div>
 </div>
@@ -981,6 +985,8 @@ function renderQuestion() {
   document.getElementById('ai-loading').className = 'ai-loading';
   document.getElementById('ai-result').className = 'ai-result';
   document.getElementById('next-wrap').className = 'next-wrap';
+  document.getElementById('bank-choice').style.display = 'none';
+  document.getElementById('next-btn').style.display = '';
   document.getElementById('next-btn').textContent = idx + 1 < total ? 'Siguiente →' : 'Ver resultado';
 
   // scroll top
@@ -1012,6 +1018,11 @@ function selectAnswer(idx, btn) {
   if (isCorrect) {
     session.correct++;
     showFeedback(true, q.justification);
+    if (session.isBank) {
+      // Show two-button choice for bank mode
+      document.getElementById('bank-choice').style.display = 'flex';
+      document.getElementById('next-btn').style.display = 'none';
+    }
   } else {
     session.wrong++;
     showFeedback(false, q.justification);
@@ -1119,6 +1130,20 @@ function markAsLearned(idx) {
   updateHomeStats();
   showBankScreen();
   toast('¡Pregunta eliminada del banco! 🎉');
+}
+
+function bankCorrectLeave() {
+  // Remove current question from bank and advance
+  const q = session.questions[session.idx];
+  removeFromBank(q);
+  updateHomeStats();
+  toast('✓ Eliminada del banco');
+  nextQuestion();
+}
+
+function bankCorrectKeep() {
+  // Keep in bank, just advance
+  nextQuestion();
 }
 
 // ═══════════════════════════════════════════════════════
