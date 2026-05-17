@@ -1012,8 +1012,6 @@ function selectAnswer(idx, btn) {
   if (isCorrect) {
     session.correct++;
     showFeedback(true, q.justification);
-    // Remove from fail bank if answered correctly
-    removeFromBank(q);
   } else {
     session.wrong++;
     showFeedback(false, q.justification);
@@ -1115,6 +1113,14 @@ function removeFromBank(q) {
   save();
 }
 
+function markAsLearned(idx) {
+  state.failBank.splice(idx, 1);
+  save();
+  updateHomeStats();
+  showBankScreen();
+  toast('¡Pregunta eliminada del banco! 🎉');
+}
+
 // ═══════════════════════════════════════════════════════
 //  BANK SCREEN
 // ═══════════════════════════════════════════════════════
@@ -1132,10 +1138,13 @@ function showBankScreen() {
       const block = BLOCKS.find(b => b.id === q.blockId) || { icon: '❓', name: 'Desconocido' };
       item.innerHTML = `
         <div class="bank-item-q">${q.q}</div>
-        <div class="bank-item-meta">
-          <span class="fail-dot"></span>
-          Fallada ${q.failCount || 1} vez${(q.failCount || 1) !== 1 ? 'es' : ''}
-          &nbsp;·&nbsp; ${block.icon} ${block.name}
+        <div class="bank-item-meta" style="justify-content:space-between;align-items:center">
+          <span style="display:flex;align-items:center;gap:8px">
+            <span class="fail-dot"></span>
+            Fallada ${q.failCount || 1} vez${(q.failCount || 1) !== 1 ? 'es' : ''}
+            &nbsp;·&nbsp; ${block.icon} ${block.name}
+          </span>
+          <button onclick="markAsLearned(${i})" style="background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.3);border-radius:8px;padding:5px 10px;color:#34d399;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;flex-shrink:0">✓ Ya la sé</button>
         </div>
       `;
       list.appendChild(item);
